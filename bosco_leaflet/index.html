@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Bosco del Ricordo – Mappa</title>
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Dati -->
+  <script src="./alberi_bosco.js"></script>
+
+  <style>
+    html, body { margin:0; padding:0; background:#f6f6f3; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+    .wrap { max-width: 1100px; margin: 18px auto; padding: 0 14px 18px; }
+    .card { background:#fff; border-radius:14px; box-shadow:0 10px 30px rgba(0,0,0,.08); overflow:hidden; border:1px solid rgba(0,0,0,.06); position:relative; }
+    #map { height: 70vh; width:100%; }
+
+    .leaflet-popup-content { font-family: Georgia, serif; line-height: 1.45; margin: 14px; }
+    .popup .specie { font-size: 16px; font-weight: 700; margin: 6px 0 8px; }
+    .popup .dedica {
+      white-space: normal;
+      overflow: visible;
+      max-height: none;
+    }
+    .popup .donatore, .popup .anno { font-size: 13px; color: #666; }
+
+    .popup .imgwrap{
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      border-radius: 10px;
+      background: #eee;
+      margin-bottom: 10px;
+      border: 1px solid rgba(0,0,0,.06);
+    }
+    .popup .imgwrap img{
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display:block;
+    }
+
+    .leaflet-marker-icon { transition: transform .15s ease; }
+    .leaflet-marker-icon:hover { transform: scale(1.15); }
+
+    .searchbox {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      z-index: 9999;
+      width: 320px;
+      background: rgba(255,255,255,.96);
+      border: 1px solid rgba(0,0,0,.10);
+      border-radius: 12px;
+      box-shadow: 0 10px 24px rgba(0,0,0,.12);
+      overflow: hidden;
+      backdrop-filter: blur(6px);
+    }
+    .searchbox .row { display:flex; align-items:center; gap:8px; padding: 10px 10px; }
+    .searchbox input {
+      width: 100%; border: none; outline: none; font-size: 14px;
+      padding: 10px 12px; border-radius: 10px; background: #f3f4f6;
+    }
+    .results { max-height: 280px; overflow:auto; border-top: 1px solid rgba(0,0,0,.08); display:none; }
+    .result-item { padding: 10px 12px; cursor:pointer; border-bottom: 1px solid rgba(0,0,0,.06); }
+    .result-item:hover { background:#f9fafb; }
+    .result-title { font-weight: 650; font-size: 13px; color:#111827; }
+    .result-sub { font-size: 12px; color:#6b7280; margin-top:2px; }
+    .hint { font-size: 12px; color:#6b7280; padding: 0 12px 10px; }
+  
+    /* Popup: abilita lo scroll per dediche lunghe */
+    .leaflet-popup-content {
+      max-height: 60vh;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+    }
+    /* Dedica: mantiene gli a-capo e gestisce testi lunghi */
+    .popup .dedica {
+      white-space: normal;
+      max-height: 240px;
+      overflow-y: auto;
+      padding-right: 6px;
+    }
+
+  
+    /* Evita scroll orizzontale nel popup */
+    .leaflet-popup-content {
+      overflow-x: hidden;
+    }
+    .popup {
+      overflow-x: hidden;
+    }
+
+  
+    /* Popup: dimensione coerente (desktop + mobile) */
+    .leaflet-popup-content-wrapper {
+      border-radius: 16px;
+    }
+    .leaflet-popup-content {
+      /* larghezza coerente: su desktop ~360-420px, su mobile quasi tutta la viewport */
+      width: clamp(320px, 40vw, 420px);
+      max-width: 90vw;
+      /* altezza coerente con scroll interno */
+      max-height: min(70vh, 560px);
+      overflow-y: auto;
+      overflow-x: hidden;
+      box-sizing: border-box;
+    }
+    /* Mantiene l’immagine sempre visibile in alto (16:9) */
+    .popup .imgwrap{
+      aspect-ratio: 16 / 9;
+      width: 100%;
+      border-radius: 12px;
+    }
+    /* Spaziatura interna più uniforme */
+    .leaflet-popup-content {
+      margin: 14px;
+    }
+    /* Mobile: un po’ più larga e alta, ma sempre scorrevole */
+    @media (max-width: 520px){
+      .leaflet-popup-content{
+        width: 88vw;
+        max-height: 72vh;
+      }
+    }
+
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="searchbox">
+        <div class="row">
+          <input id="searchInput" type="text" placeholder="Cerca persona, donatore, specie, ID…" autocomplete="off" />
+        </div>
+        <div class="hint">Suggerimento: premi Invio per andare al primo risultato.</div>
+        <div class="results" id="results"></div>
+      </div>
+      <div id="map"></div>
+    </div>
+  </div>
+
+  <script>
+    const map = L.map('map', { zoomControl: true });
+
+    // Base predefinita “Google-like”
+    const voyager = L.tileLayer(
+      'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+      { maxZoom: 22, attribution: '&copy; OpenStreetMap &copy; CARTO' }
+    ).addTo(map);
+
+    // Satellite (Esri)
+    const sat = L.tileLayer(
+      'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+      { maxZoom: 22, attribution: 'Tiles &copy; Esri' }
+    );
+
+    L.control.layers({ "Strade": voyager, "Satellite": sat }, null, { collapsed: true }).addTo(map);
+
+    // ✅ Foto fiori per specie (cartella: ./img/)
+    // Le chiavi DEVONO combaciare con il testo della colonna "Specie" nel dataset.
+    const specieImages = {
+      // PRUNUS
+      'Prunus serrulata “Amanogawa”': './img/prunus_amanogawa.jpg',
+      'Prunus serrulata “Kanzan”': './img/prunus_kanzan.jpg',
+      'Prunus serrulata “Shiro-fugen”': './img/prunus_shirofugen.jpg',
+      'Prunus serrulata “Tai-Haku”': './img/prunus_tai_haku.jpg',
+      'Prunus × subhirtella “Autumnalis”': './img/prunus_subhirtella_autumnalis.jpg',
+      'Prunus × subhirtella “Stellata”': './img/prunus_subhirtella_stellata.jpg',
+      'Prunus × yedoensis': './img/prunus_yedoensis.jpg',
+      'Prunus “Kursar”': './img/prunus_kursar.jpg',
+      'Prunus “Accolade”': './img/prunus_accolade.jpg',
+      'Prunus sargentii': './img/prunus_sargentii.jpg',
+
+      // MALUS
+      'Malus "Golden Hornet"': './img/malus_golde_hornet.jpg',
+      'Malus "Coccinella"': './img/malus_coccinella.jpg',
+      'Malus "Red Sentinel"': './img/malus_red_sentinel.jpg',
+      'Malus "Scarlet"': './img/malus_scarlet.jpg',
+      'Malus "Evereste"': './img/malus_evereste.jpg',
+      'Malus "John Downie"': './img/malus_john_downie.jpg',
+      'Malus trilobata': './img/malus_trilobata.jpg',
+      'Malus x purpurea': './img/malus_floribunda.jpg'  // se vuoi, puoi sostituire con una foto più corretta
+    };
+
+    // Se un domani aggiungi una colonna "Img" nel dataset (URL diretto), viene usata quella
+    function getImageForFeature(p) {
+      if (!p) return "";
+      if (p.Img) return String(p.Img);
+      const sp = p.Specie ?? "";
+      return specieImages[sp] ?? "";
+    }
+
+    // Icone per Tipo
+    const iconCache = new Map();
+    function getIconByTipo(tipo) {
+      const key = String(tipo ?? "1");
+      if (iconCache.has(key)) return iconCache.get(key);
+      const icon = L.icon({
+        iconUrl: `./icons/${key}.png`,
+        iconSize: [32, 32],
+        iconAnchor: [16, 32],
+        popupAnchor: [0, -28]
+      });
+      iconCache.set(key, icon);
+      return icon;
+    }
+
+    const searchable = [];
+    let centerMarker = null;
+
+    const layer = L.geoJSON(alberiData, {
+      pointToLayer: (feature, latlng) => {
+        const p = feature.properties || {};
+        const m = L.marker(latlng, { icon: getIconByTipo(p.Tipo) });
+        if (String(p.ID) === "15") centerMarker = m; // centro iniziale su ID 15
+        return m;
+      },
+      onEachFeature: (feature, lyr) => {
+        const p = feature.properties || {};
+        const dedicaRaw = (p.Dedica ?? "").toString();
+        // Gestisce: a-capo reali (\r\n / \n / \r) e sequenze letterali "\n"
+        const dedica = dedicaRaw
+          .replace(/\r\n|\n|\r/g, "<br>")
+          .replace(/\\n/g, "<br>");
+
+        const imgUrl = getImageForFeature(p);
+        const imgHtml = imgUrl
+          ? `<div class="imgwrap"><img src="${imgUrl}" alt="${(p.Specie ?? "Foto specie").toString().replace(/"/g,"&quot;")}"></div>`
+          : "";
+
+        const html = `
+          <div class="popup">
+            ${imgHtml}
+            <div class="specie">${p.Specie ?? ""}</div>
+            <div><b>In memoria di:</b> ${p["In memoria di"] ?? ""}</div>
+            ${dedica ? `<div class="dedica">${dedica}</div>` : ""}
+            <div class="donatore"><b>Donatore:</b> ${p.Donatore ?? ""}</div>
+            <div class="anno">Anno ${p.Anno ?? ""} • ID ${p.ID ?? ""}</div>
+          </div>`;
+        lyr.bindPopup(html, { maxWidth: 380 });
+
+        const searchText = [p.ID ?? "", p.Specie ?? "", p["In memoria di"] ?? "", p.Donatore ?? ""].join(" ").toLowerCase();
+        searchable.push({ marker: lyr, id: p.ID ?? "", specie: p.Specie ?? "", memoria: p["In memoria di"] ?? "", donatore: p.Donatore ?? "", searchText });
+      }
+    }).addTo(map);
+
+    // Centro su ID 15 + zoom intermedio
+    if (centerMarker) {
+      map.setView(centerMarker.getLatLng(), 20);
+    } else {
+      map.fitBounds(layer.getBounds(), { padding: [40, 40], maxZoom: 20 });
+    }
+
+    // Ricerca
+    const input = document.getElementById("searchInput");
+    const resultsEl = document.getElementById("results");
+
+    function renderResults(items) {
+      resultsEl.innerHTML = "";
+      if (!items.length) { resultsEl.style.display = "none"; return; }
+      items.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "result-item";
+        div.innerHTML = `
+          <div class="result-title">ID ${item.id} • ${item.memoria ? item.memoria : (item.donatore || "—")}</div>
+          <div class="result-sub">${item.specie || ""}${item.donatore ? " • " + item.donatore : ""}</div>`;
+        div.onclick = () => {
+          const ll = item.marker.getLatLng();
+          map.setView(ll, 21);
+          item.marker.openPopup();
+          resultsEl.style.display = "none";
+        };
+        resultsEl.appendChild(div);
+      });
+      resultsEl.style.display = "block";
+    }
+
+    function doSearch(q) {
+      q = (q || "").trim().toLowerCase();
+      if (!q) { renderResults([]); return; }
+      renderResults(searchable.filter(x => x.searchText.includes(q)).slice(0, 12));
+    }
+
+    input.addEventListener("input", e => doSearch(e.target.value));
+    input.addEventListener("keydown", e => {
+      if (e.key === "Enter") {
+        const hits = searchable.filter(x => x.searchText.includes(input.value.toLowerCase()));
+        if (hits.length) {
+          const ll = hits[0].marker.getLatLng();
+          map.setView(ll, 21);
+          hits[0].marker.openPopup();
+          resultsEl.style.display = "none";
+        }
+      }
+      if (e.key === "Escape") {
+        input.value = "";
+        renderResults([]);
+      }
+    });
+
+    map.on("click", () => { resultsEl.style.display = "none"; });
+  </script>
+</body>
+</html>
