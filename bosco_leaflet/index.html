@@ -12,25 +12,67 @@
   <script src="./alberi_bosco.js"></script>
 
   <style>
-    html, body { margin:0; padding:0; background:#f6f6f3; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
-    .wrap { max-width: 1100px; margin: 18px auto; padding: 0 14px 18px; }
-    .card { background:#fff; border-radius:14px; box-shadow:0 10px 30px rgba(0,0,0,.08); overflow:hidden; border:1px solid rgba(0,0,0,.06); position:relative; }
-    #map { height: 70vh; width:100%; }
+    html, body { height:100%; margin:0; padding:0; background:transparent; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+    #map { height:100vh; width:100vw; }
 
-    .leaflet-popup-content { font-family: Georgia, serif; line-height: 1.45; margin: 14px; }
-    .popup .specie { font-size: 16px; font-weight: 700; margin: 6px 0 8px; }
-    .popup .dedica {
-      white-space: normal;
-      overflow: visible;
-      max-height: none;
+    /* ===== Search box ===== */
+    .searchbox {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      z-index: 2000;
+      width: 340px;
+      background: rgba(255,255,255,.96);
+      border: 1px solid rgba(0,0,0,.10);
+      border-radius: 14px;
+      box-shadow: 0 10px 24px rgba(0,0,0,.12);
+      overflow: hidden;
+      backdrop-filter: blur(6px);
     }
-    .popup .donatore, .popup .anno { font-size: 13px; color: #666; }
+    .searchbox .row { display:flex; align-items:center; gap:8px; padding: 10px; }
+    .searchbox input {
+      width: 100%;
+      border: none;
+      outline: none;
+      font-size: 14px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: #f3f4f6;
+    }
+    .hint { font-size: 12px; color:#6b7280; padding: 0 12px 10px; }
+    .results {
+      max-height: 280px;
+      overflow:auto;
+      border-top: 1px solid rgba(0,0,0,.08);
+      display:none;
+      background: rgba(255,255,255,.98);
+    }
+    .result-item { padding: 10px 12px; cursor:pointer; border-bottom: 1px solid rgba(0,0,0,.06); }
+    .result-item:hover { background:#f9fafb; }
+    .result-title { font-weight: 650; font-size: 13px; color:#111827; }
+    .result-sub { font-size: 12px; color:#6b7280; margin-top:2px; }
 
+    /* ===== Desktop popup (Leaflet) ===== */
+    .leaflet-popup-content-wrapper { border-radius: 16px; }
+    .leaflet-popup-content {
+      width: clamp(320px, 40vw, 420px);
+      max-width: 90vw;
+      max-height: min(70vh, 560px);
+      overflow-y: auto;
+      overflow-x: hidden;
+      box-sizing: border-box;
+      margin: 14px;
+      font-family: Georgia, serif;
+      line-height: 1.45;
+    }
+    .popup .specie { font-size: 16px; font-weight: 700; margin: 6px 0 8px; }
+    .popup .dedica { font-style: italic; margin: 8px 0; color: #444; }
+    .popup .donatore, .popup .anno { font-size: 13px; color: #666; }
     .popup .imgwrap{
       width: 100%;
       aspect-ratio: 16 / 9;
       overflow: hidden;
-      border-radius: 10px;
+      border-radius: 12px;
       background: #eee;
       margin-bottom: 10px;
       border: 1px solid rgba(0,0,0,.06);
@@ -45,113 +87,113 @@
     .leaflet-marker-icon { transition: transform .15s ease; }
     .leaflet-marker-icon:hover { transform: scale(1.15); }
 
-    .searchbox {
-      position: absolute;
-      top: 12px;
-      left: 12px;
-      z-index: 9999;
-      width: 320px;
-      background: rgba(255,255,255,.96);
-      border: 1px solid rgba(0,0,0,.10);
-      border-radius: 12px;
-      box-shadow: 0 10px 24px rgba(0,0,0,.12);
-      overflow: hidden;
-      backdrop-filter: blur(6px);
-    }
-    .searchbox .row { display:flex; align-items:center; gap:8px; padding: 10px 10px; }
-    .searchbox input {
-      width: 100%; border: none; outline: none; font-size: 14px;
-      padding: 10px 12px; border-radius: 10px; background: #f3f4f6;
-    }
-    .results { max-height: 280px; overflow:auto; border-top: 1px solid rgba(0,0,0,.08); display:none; }
-    .result-item { padding: 10px 12px; cursor:pointer; border-bottom: 1px solid rgba(0,0,0,.06); }
-    .result-item:hover { background:#f9fafb; }
-    .result-title { font-weight: 650; font-size: 13px; color:#111827; }
-    .result-sub { font-size: 12px; color:#6b7280; margin-top:2px; }
-    .hint { font-size: 12px; color:#6b7280; padding: 0 12px 10px; }
-  
-    /* Popup: abilita lo scroll per dediche lunghe */
-    .leaflet-popup-content {
-      max-height: 60vh;
-      overflow-y: auto;
-      overscroll-behavior: contain;
-    }
-    /* Dedica: mantiene gli a-capo e gestisce testi lunghi */
-    .popup .dedica {
-      white-space: normal;
-      max-height: 240px;
-      overflow-y: auto;
-      padding-right: 6px;
-    }
-
-  
-    /* Evita scroll orizzontale nel popup */
-    .leaflet-popup-content {
-      overflow-x: hidden;
-    }
-    .popup {
-      overflow-x: hidden;
-    }
-
-  
-    /* Popup: dimensione coerente (desktop + mobile) */
-    .leaflet-popup-content-wrapper {
-      border-radius: 16px;
-    }
-    .leaflet-popup-content {
-      /* larghezza coerente: su desktop ~360-420px, su mobile quasi tutta la viewport */
-      width: clamp(320px, 40vw, 420px);
-      max-width: 90vw;
-      /* altezza coerente con scroll interno */
-      max-height: min(70vh, 560px);
-      overflow-y: auto;
-      overflow-x: hidden;
+    /* ===== Mobile modal (full-screen card) ===== */
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 5000;
+      display: none;
+      background: rgba(0,0,0,.35);
+      padding: 10px;
       box-sizing: border-box;
     }
-    /* Mantiene l’immagine sempre visibile in alto (16:9) */
-    .popup .imgwrap{
-      aspect-ratio: 16 / 9;
-      width: 100%;
+    .modal.open { display: flex; align-items: flex-start; justify-content: center; }
+    .modal-card{
+      width: min(720px, 100%);
+      max-height: 92vh;
+      background: #fff;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 18px 40px rgba(0,0,0,.22);
+      border: 1px solid rgba(0,0,0,.08);
+      display: flex;
+      flex-direction: column;
+    }
+    .modal-head{
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 10px;
+      border-bottom: 1px solid rgba(0,0,0,.08);
+      background: rgba(255,255,255,.96);
+    }
+    .modal-back{
+      border: none;
+      background: #f3f4f6;
+      padding: 10px 12px;
       border-radius: 12px;
+      cursor:pointer;
+      font-size: 14px;
     }
-    /* Spaziatura interna più uniforme */
-    .leaflet-popup-content {
-      margin: 14px;
+    .modal-close{
+      border: none;
+      background: transparent;
+      font-size: 22px;
+      line-height: 1;
+      cursor:pointer;
+      padding: 6px 10px;
+      border-radius: 10px;
     }
-    /* Mobile: un po’ più larga e alta, ma sempre scorrevole */
-    @media (max-width: 520px){
-      .leaflet-popup-content{
-        width: 88vw;
-        max-height: 72vh;
-      }
+    .modal-body{
+      padding: 14px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      font-family: Georgia, serif;
+      line-height: 1.45;
     }
 
+    /* Mobile tweaks: search in basso e non sovrapposta */
+    @media (max-width: 600px){
+      #map { height: 100vh; width: 100vw; }
+      .searchbox{
+        top: auto;
+        bottom: 12px;
+        left: 12px;
+        right: 12px;
+        width: auto;
+        max-width: calc(100vw - 24px);
+      }
+      .hint{ display:none; }
+      .results{ max-height: 240px; }
+      .leaflet-control-layers{
+        margin-top: 8px;
+      }
+    }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="card">
-      <div class="searchbox">
-        <div class="row">
-          <input id="searchInput" type="text" placeholder="Cerca persona, donatore, specie, ID…" autocomplete="off" />
-        </div>
-        <div class="hint">Suggerimento: premi Invio per andare al primo risultato.</div>
-        <div class="results" id="results"></div>
+
+  <!-- Search -->
+  <div class="searchbox" id="searchbox">
+    <div class="row">
+      <input id="searchInput" type="text" placeholder="Cerca persona, donatore, specie, ID…" autocomplete="off" />
+    </div>
+    <div class="hint">Suggerimento: premi Invio per andare al primo risultato.</div>
+    <div class="results" id="results"></div>
+  </div>
+
+  <div id="map"></div>
+
+  <!-- Mobile modal -->
+  <div class="modal" id="modal">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-label="Scheda elemento">
+      <div class="modal-head">
+        <button class="modal-back" id="modalBack">← Torna alla mappa</button>
+        <button class="modal-close" id="modalClose" aria-label="Chiudi">×</button>
       </div>
-      <div id="map"></div>
+      <div class="modal-body" id="modalBody"></div>
     </div>
   </div>
 
   <script>
     const map = L.map('map', { zoomControl: true });
 
-    // Base predefinita “Google-like”
     const voyager = L.tileLayer(
       'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
       { maxZoom: 22, attribution: '&copy; OpenStreetMap &copy; CARTO' }
     ).addTo(map);
 
-    // Satellite (Esri)
     const sat = L.tileLayer(
       'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
       { maxZoom: 22, attribution: 'Tiles &copy; Esri' }
@@ -159,10 +201,10 @@
 
     L.control.layers({ "Strade": voyager, "Satellite": sat }, null, { collapsed: true }).addTo(map);
 
-    // ✅ Foto fiori per specie (cartella: ./img/)
-    // Le chiavi DEVONO combaciare con il testo della colonna "Specie" nel dataset.
+    const isMobile = window.matchMedia && window.matchMedia("(max-width: 600px)").matches;
+
+    // Foto fiori per specie (cartella: ./img/)
     const specieImages = {
-      // PRUNUS
       'Prunus serrulata “Amanogawa”': './img/prunus_amanogawa.jpg',
       'Prunus serrulata “Kanzan”': './img/prunus_kanzan.jpg',
       'Prunus serrulata “Shiro-fugen”': './img/prunus_shirofugen.jpg',
@@ -174,7 +216,6 @@
       'Prunus “Accolade”': './img/prunus_accolade.jpg',
       'Prunus sargentii': './img/prunus_sargentii.jpg',
 
-      // MALUS
       'Malus "Golden Hornet"': './img/malus_golde_hornet.jpg',
       'Malus "Coccinella"': './img/malus_coccinella.jpg',
       'Malus "Red Sentinel"': './img/malus_red_sentinel.jpg',
@@ -182,10 +223,9 @@
       'Malus "Evereste"': './img/malus_evereste.jpg',
       'Malus "John Downie"': './img/malus_john_downie.jpg',
       'Malus trilobata': './img/malus_trilobata.jpg',
-      'Malus x purpurea': './img/malus_floribunda.jpg'  // se vuoi, puoi sostituire con una foto più corretta
+      'Malus x purpurea': './img/malus_floribunda.jpg'
     };
 
-    // Se un domani aggiungi una colonna "Img" nel dataset (URL diretto), viene usata quella
     function getImageForFeature(p) {
       if (!p) return "";
       if (p.Img) return String(p.Img);
@@ -208,6 +248,53 @@
       return icon;
     }
 
+    // Costruisce HTML scheda (popup/modal)
+    function buildCardHTML(p){
+      const dedicaRaw = (p.Dedica ?? "").toString();
+      const dedica = dedicaRaw
+        .replace(/\r\n|\n|\r/g, "<br>")
+        .replace(/\\n/g, "<br>");
+
+      const imgUrl = getImageForFeature(p);
+      const imgHtml = imgUrl
+        ? `<div class="imgwrap"><img src="${imgUrl}" alt="${(p.Specie ?? "Foto").toString().replace(/"/g,"&quot;")}"></div>`
+        : "";
+
+      return `
+        <div class="popup">
+          ${imgHtml}
+          <div class="specie">${p.Specie ?? ""}</div>
+          <div><b>In memoria di:</b> ${p["In memoria di"] ?? ""}</div>
+          ${dedica ? `<div class="dedica">${dedica}</div>` : ""}
+          <div class="donatore"><b>Donatore:</b> ${p.Donatore ?? ""}</div>
+          <div class="anno">Anno ${p.Anno ?? ""} • ID ${p.ID ?? ""}</div>
+        </div>
+      `;
+    }
+
+    // Mobile modal controls
+    const modal = document.getElementById("modal");
+    const modalBody = document.getElementById("modalBody");
+    const modalBack = document.getElementById("modalBack");
+    const modalClose = document.getElementById("modalClose");
+    const searchbox = document.getElementById("searchbox");
+
+    function openModal(html){
+      modalBody.innerHTML = html;
+      modal.classList.add("open");
+      if (isMobile) searchbox.style.display = "none";
+    }
+    function closeModal(){
+      modal.classList.remove("open");
+      modalBody.innerHTML = "";
+      if (isMobile) searchbox.style.display = "";
+    }
+    modalBack.addEventListener("click", closeModal);
+    modalClose.addEventListener("click", closeModal);
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) closeModal();
+    });
+
     const searchable = [];
     let centerMarker = null;
 
@@ -215,39 +302,26 @@
       pointToLayer: (feature, latlng) => {
         const p = feature.properties || {};
         const m = L.marker(latlng, { icon: getIconByTipo(p.Tipo) });
-        if (String(p.ID) === "15") centerMarker = m; // centro iniziale su ID 15
+        if (String(p.ID) === "15") centerMarker = m;
         return m;
       },
       onEachFeature: (feature, lyr) => {
         const p = feature.properties || {};
-        const dedicaRaw = (p.Dedica ?? "").toString();
-        // Gestisce: a-capo reali (\r\n / \n / \r) e sequenze letterali "\n"
-        const dedica = dedicaRaw
-          .replace(/\r\n|\n|\r/g, "<br>")
-          .replace(/\\n/g, "<br>");
+        const html = buildCardHTML(p);
 
-        const imgUrl = getImageForFeature(p);
-        const imgHtml = imgUrl
-          ? `<div class="imgwrap"><img src="${imgUrl}" alt="${(p.Specie ?? "Foto specie").toString().replace(/"/g,"&quot;")}"></div>`
-          : "";
+        if (!isMobile) {
+          lyr.bindPopup(html, { maxWidth: 420 });
+        }
 
-        const html = `
-          <div class="popup">
-            ${imgHtml}
-            <div class="specie">${p.Specie ?? ""}</div>
-            <div><b>In memoria di:</b> ${p["In memoria di"] ?? ""}</div>
-            ${dedica ? `<div class="dedica">${dedica}</div>` : ""}
-            <div class="donatore"><b>Donatore:</b> ${p.Donatore ?? ""}</div>
-            <div class="anno">Anno ${p.Anno ?? ""} • ID ${p.ID ?? ""}</div>
-          </div>`;
-        lyr.bindPopup(html, { maxWidth: 380 });
+        lyr.on("click", () => {
+          if (isMobile) openModal(html);
+        });
 
         const searchText = [p.ID ?? "", p.Specie ?? "", p["In memoria di"] ?? "", p.Donatore ?? ""].join(" ").toLowerCase();
         searchable.push({ marker: lyr, id: p.ID ?? "", specie: p.Specie ?? "", memoria: p["In memoria di"] ?? "", donatore: p.Donatore ?? "", searchText });
       }
     }).addTo(map);
 
-    // Centro su ID 15 + zoom intermedio
     if (centerMarker) {
       map.setView(centerMarker.getLatLng(), 20);
     } else {
@@ -270,7 +344,13 @@
         div.onclick = () => {
           const ll = item.marker.getLatLng();
           map.setView(ll, 21);
-          item.marker.openPopup();
+
+          if (isMobile) {
+            const p = item.marker.feature?.properties || {};
+            openModal(buildCardHTML(p));
+          } else {
+            item.marker.openPopup();
+          }
           resultsEl.style.display = "none";
         };
         resultsEl.appendChild(div);
@@ -291,7 +371,12 @@
         if (hits.length) {
           const ll = hits[0].marker.getLatLng();
           map.setView(ll, 21);
-          hits[0].marker.openPopup();
+          if (isMobile) {
+            const p = hits[0].marker.feature?.properties || {};
+            openModal(buildCardHTML(p));
+          } else {
+            hits[0].marker.openPopup();
+          }
           resultsEl.style.display = "none";
         }
       }
