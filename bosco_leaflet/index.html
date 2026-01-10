@@ -260,14 +260,27 @@
         ? `<div class="imgwrap"><img src="${imgUrl}" alt="${(p.Specie ?? "Foto").toString().replace(/"/g,"&quot;")}"></div>`
         : "";
 
+      const memoria = (p["In memoria di"] ?? "").toString().trim();
+      const memoriaHtml = memoria ? `<div><b>In memoria di:</b> ${memoria}</div>` : "";
+
+      const donatore = (p.Donatore ?? "").toString().trim();
+      const donatoreHtml = donatore ? `<div class="donatore"><b>Donatore:</b> ${donatore}</div>` : "";
+
+      const anno = (p.Anno ?? "").toString().trim();
+      const id = (p.ID ?? "").toString().trim();
+      const metaParts = [];
+      if (anno) metaParts.push(`Anno ${anno}`);
+      if (id) metaParts.push(`ID ${id}`);
+      const metaHtml = metaParts.length ? `<div class="anno">${metaParts.join(" • ")}</div>` : "";
+
       return `
         <div class="popup">
           ${imgHtml}
           <div class="specie">${p.Specie ?? ""}</div>
-          <div><b>In memoria di:</b> ${p["In memoria di"] ?? ""}</div>
+          ${memoriaHtml}
           ${dedica ? `<div class="dedica">${dedica}</div>` : ""}
-          <div class="donatore"><b>Donatore:</b> ${p.Donatore ?? ""}</div>
-          <div class="anno">Anno ${p.Anno ?? ""} • ID ${p.ID ?? ""}</div>
+          ${donatoreHtml}
+          ${metaHtml}
         </div>
       `;
     }
