@@ -347,7 +347,7 @@ const alberiData = {
         "Anno": 2022,
         "In memoria di": null,
         "Dedica": "“Cosa innerva, cosa spinge e tende la vita\ndell’uomo se non la speranza?\nE in cosa consiste quest’infinita, straziata,\nincolmabile speranza se non nel raggiungere\nil senso, la ragione e il significato\ndell’esistenza medesima?”\n\nGiovanni Testori, 1979",
-        "Donatore": "la ragione e il significato dell’esistenza medesima?”  Giovanni Testori",
+        "Donatore": "Associazione Giovanni Testori",
         "Lat": 45.5246715,
         "Lon": 9.1430809
       },
@@ -956,7 +956,7 @@ const alberiData = {
         "Anno": 2023,
         "In memoria di": "Francesca Ceraso, Domenico La Rosa e Michele La Rosa",
         "Dedica": "Come le stelle brillano\neterne nel cielo,\nla vostra anima brillerà per sempre\nnei nostri cuori.",
-        "Donatore": "Mimma e Antonio",
+        "Donatore": "Michele, Fortunata, Vincenzo, Mimma e Antonio",
         "Lat": 45.5245127,
         "Lon": 9.1433289
       },
@@ -1561,7 +1561,7 @@ const alberiData = {
       "properties": {
         "ID": 75,
         "Specie": "Malus \"Red Sentinel\"",
-        "Tipo": 1,
+        "Tipo": 3,
         "Anno": 2025,
         "In memoria di": "Rozza Stefano",
         "Dedica": "Chi ha camminato su questa terra\ncontinua a vivere in essa\ne a crescere e a fiorire\nattraverso le persone\nche lo hanno conosciuto e amato.",
