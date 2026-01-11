@@ -87,6 +87,16 @@
     .leaflet-marker-icon { transition: transform .15s ease; }
     .leaflet-marker-icon:hover { transform: scale(1.15); }
 
+    /* Evidenzia il marker selezionato (desktop + mobile) */
+    .marker-selected {
+      filter:
+        brightness(0.65) saturate(1.4) contrast(1.1)
+        drop-shadow(0 0 6px rgba(0,0,0,.35));
+      transform: scale(1.12);
+      transform-origin: bottom center;
+    }
+
+
     /* ===== Mobile modal (full-screen card) ===== */
     .modal {
       position: fixed;
@@ -201,7 +211,35 @@
 
     L.control.layers({ "Strade": voyager, "Satellite": sat }, null, { collapsed: true }).addTo(map);
 
+    // Quando chiudi un popup su desktop, togli l'evidenziazione
+    map.on("popupclose", () => { clearSelectedMarker(); });
+
     const isMobile = window.matchMedia && window.matchMedia("(max-width: 600px)").matches;
+
+    // Marker selezionato: evidenzia il punto cliccato
+    let selectedMarker = null;
+
+    function setSelectedMarker(marker) {
+      try {
+        if (selectedMarker && selectedMarker._icon) {
+          selectedMarker._icon.classList.remove("marker-selected");
+        }
+        selectedMarker = marker;
+        if (selectedMarker && selectedMarker._icon) {
+          selectedMarker._icon.classList.add("marker-selected");
+        }
+      } catch (e) { /* noop */ }
+    }
+
+    function clearSelectedMarker() {
+      try {
+        if (selectedMarker && selectedMarker._icon) {
+          selectedMarker._icon.classList.remove("marker-selected");
+        }
+      } catch (e) { /* noop */ }
+      selectedMarker = null;
+    }
+
 
     // Foto fiori per specie (cartella: ./img/)
     const specieImages = {
@@ -260,27 +298,14 @@
         ? `<div class="imgwrap"><img src="${imgUrl}" alt="${(p.Specie ?? "Foto").toString().replace(/"/g,"&quot;")}"></div>`
         : "";
 
-      const memoria = (p["In memoria di"] ?? "").toString().trim();
-      const memoriaHtml = memoria ? `<div><b>In memoria di:</b> ${memoria}</div>` : "";
-
-      const donatore = (p.Donatore ?? "").toString().trim();
-      const donatoreHtml = donatore ? `<div class="donatore"><b>Donatore:</b> ${donatore}</div>` : "";
-
-      const anno = (p.Anno ?? "").toString().trim();
-      const id = (p.ID ?? "").toString().trim();
-      const metaParts = [];
-      if (anno) metaParts.push(`Anno ${anno}`);
-      if (id) metaParts.push(`ID ${id}`);
-      const metaHtml = metaParts.length ? `<div class="anno">${metaParts.join(" • ")}</div>` : "";
-
       return `
         <div class="popup">
           ${imgHtml}
           <div class="specie">${p.Specie ?? ""}</div>
-          ${memoriaHtml}
+          <div><b>In memoria di:</b> ${p["In memoria di"] ?? ""}</div>
           ${dedica ? `<div class="dedica">${dedica}</div>` : ""}
-          ${donatoreHtml}
-          ${metaHtml}
+          <div class="donatore"><b>Donatore:</b> ${p.Donatore ?? ""}</div>
+          <div class="anno">Anno ${p.Anno ?? ""} • ID ${p.ID ?? ""}</div>
         </div>
       `;
     }
@@ -301,6 +326,7 @@
       modal.classList.remove("open");
       modalBody.innerHTML = "";
       if (isMobile) searchbox.style.display = "";
+      clearSelectedMarker();
     }
     modalBack.addEventListener("click", closeModal);
     modalClose.addEventListener("click", closeModal);
@@ -327,6 +353,7 @@
         }
 
         lyr.on("click", () => {
+          setSelectedMarker(lyr);
           if (isMobile) openModal(html);
         });
 
@@ -358,6 +385,7 @@
           const ll = item.marker.getLatLng();
           map.setView(ll, 21);
 
+          setSelectedMarker(item.marker);
           if (isMobile) {
             const p = item.marker.feature?.properties || {};
             openModal(buildCardHTML(p));
@@ -384,6 +412,7 @@
         if (hits.length) {
           const ll = hits[0].marker.getLatLng();
           map.setView(ll, 21);
+          setSelectedMarker(hits[0].marker);
           if (isMobile) {
             const p = hits[0].marker.feature?.properties || {};
             openModal(buildCardHTML(p));
@@ -399,7 +428,7 @@
       }
     });
 
-    map.on("click", () => { resultsEl.style.display = "none"; });
+    map.on("click", () => { resultsEl.style.display = "none"; clearSelectedMarker(); });
   </script>
 </body>
 </html>
