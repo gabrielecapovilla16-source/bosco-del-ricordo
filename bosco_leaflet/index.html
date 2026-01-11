@@ -306,7 +306,10 @@
     // Costruisce HTML scheda (popup/modal)
     function buildCardHTML(p){
       const dedicaRaw = (p.Dedica ?? "").toString();
-      const dedica = dedicaRaw
+      const memoria = (p["In memoria di"] ?? "").toString().trim();
+  const memoriaHtml = memoria ? `<div><b>In memoria di:</b> ${memoria}</div>` : "";
+
+  const dedica = dedicaRaw
         .replace(/\r\n|\n|\r/g, "<br>")
         .replace(/\\n/g, "<br>");
 
@@ -319,7 +322,7 @@
         <div class="popup">
           ${imgHtml}
           <div class="specie">${p.Specie ?? ""}</div>
-          <div><b>In memoria di:</b> ${p["In memoria di"] ?? ""}</div>
+          ${memoriaHtml}
           ${dedica ? `<div class="dedica">${dedica}</div>` : ""}
           <div class="donatore"><b>Donatore:</b> ${p.Donatore ?? ""}</div>
           <div class="anno">Anno ${p.Anno ?? ""} • ID ${p.ID ?? ""}</div>
@@ -345,7 +348,7 @@
         const ll = marker.getLatLng();
         const z = Math.max(map.getZoom(), 20);
         map.setView(ll, z, { animate: true });
-        const offsetY = Math.round(map.getSize().y * 0.40);
+        const offsetY = Math.round(map.getSize().y * 0.33);
         requestAnimationFrame(() => {
           map.panBy([0, -offsetY], { animate: true });
         });
