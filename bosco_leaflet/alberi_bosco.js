@@ -31,7 +31,7 @@ const alberiData = {
         "Tipo": 2,
         "Anno": 2022,
         "In memoria di": null,
-        "Dedica": "Per quanto bella architettura facciano,\ngli uomini non riusciranno mai a fare\nuna cosa bella come un albero.\nPier Luigi Nervi\nSono un ciliegio da fiore\nda rispettare e curare.",
+        "Dedica": "Per quanto bella architettura facciano,\ngli uomini non riusciranno mai a fare\nuna cosa bella come un albero.\nPier Luigi Nervi",
         "Donatore": "Rita e Damiano Montrasio",
         "Lat": 45.5246072,
         "Lon": 9.1429356
@@ -73,7 +73,7 @@ const alberiData = {
         "Tipo": 2,
         "Anno": 2022,
         "In memoria di": null,
-        "Dedica": "Per quanto bella architettura facciano,\ngli uomini non riusciranno mai a fare\nuna cosa bella come un albero.\nPier Luigi Nervi\nSono un ciliegio da fiore\nda rispettare e curare.",
+        "Dedica": "Per quanto bella architettura facciano,\ngli uomini non riusciranno mai a fare\nuna cosa bella come un albero.\nPier Luigi Nervi",
         "Donatore": "Rita e Damiano Montrasio",
         "Lat": 45.5246123,
         "Lon": 9.1429577
@@ -830,7 +830,7 @@ const alberiData = {
         "Anno": 2023,
         "In memoria di": "Eros Rossetto",
         "Dedica": "“Se sarai luce, scalderai\nSe sarai luna, ti vedrò\nE se sarai qui, non lo saprò\nMa se sei tu, lo sentirò\nOvunque sarai, ovunque sarò\nIn ogni gesto io ti cercherò\nSe non ci sarai, io lo capirò\nE nel silenzio io ti ascolterò”\nIrama, 2022",
-        "Donatore": "io lo capirò E nel silenzio io ti ascolterò” Irama",
+        "Donatore": "Anna, Giacomo e Alessandra",
         "Lat": 45.5245362,
         "Lon": 9.1429907
       },
