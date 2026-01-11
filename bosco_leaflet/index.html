@@ -346,7 +346,7 @@
         const z = Math.max(map.getZoom(), 20);
         map.setView(ll, z, { animate: true });
         const offsetY = Math.round(map.getSize().y * 0.25);
-        map.panBy([0, offsetY], { animate: true });
+        map.panBy([0, -offsetY], { animate: true });
       }
     }
 
