@@ -369,8 +369,6 @@
       }
     }
 
-    }
-
     function closeModal(){
       modal.classList.remove("open");
       modalBody.innerHTML = "";
@@ -437,7 +435,7 @@
           setSelectedMarker(item.marker);
           if (isMobile) {
             const p = item.marker.feature?.properties || {};
-            openModal(buildCardHTML(p), item.marker);
+            openModal(buildCardHTML(p), hits[0].marker);
           } else {
             item.marker.openPopup();
           }
@@ -464,7 +462,7 @@
           setSelectedMarker(hits[0].marker);
           if (isMobile) {
             const p = hits[0].marker.feature?.properties || {};
-            openModal(buildCardHTML(p), item.marker);
+            openModal(buildCardHTML(p), hits[0].marker);
           } else {
             hits[0].marker.openPopup();
           }
