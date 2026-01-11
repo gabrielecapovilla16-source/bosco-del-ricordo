@@ -182,7 +182,7 @@
       .modal-card{
         width: 100%;
         max-height: none;
-        height: 50vh;                /* metà schermo */
+        height: 66vh;                /* circa 2/3 schermo */
         border-radius: 0 0 18px 18px;
       }
     }
@@ -340,19 +340,27 @@
     function openModal(html, marker){
       modalBody.innerHTML = html;
       modal.classList.add("open");
-      // su mobile nascondo la searchbox per non sovrapporla
       if (isMobile) searchbox.style.display = "none";
 
-      // su mobile: centra il punto nella metà inferiore della mappa
+      // su mobile: centra il punto nel terzo inferiore visibile (sotto la scheda 2/3)
       if (isMobile && marker && marker.getLatLng) {
         const ll = marker.getLatLng();
         const z = Math.max(map.getZoom(), 20);
+
+        // prima porta il punto vicino al centro (stabile)
         map.setView(ll, z, { animate: true });
-        const offsetY = Math.round(map.getSize().y * 0.33);
-        requestAnimationFrame(() => {
-          map.panBy([0, -offsetY], { animate: true });
+
+        // poi, quando il movimento è finito, spostalo esattamente dove vogliamo nello schermo
+        map.once("moveend", () => {
+          const size = map.getSize();
+          const desired = L.point(size.x * 0.5, size.y * (5/6)); // centro del terzo inferiore
+          const current = map.latLngToContainerPoint(ll);
+          const offset = current.subtract(desired);
+          // panBy sposta la mappa di "offset", e il marker va in posizione "desired"
+          map.panBy(offset, { animate: true });
         });
       }
+    }
     }
 
     function closeModal(){
