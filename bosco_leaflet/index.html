@@ -170,6 +170,23 @@
         margin-top: 8px;
       }
     }
+  
+    /* Mobile: scheda a metà schermo (sopra) e mappa visibile sotto */
+    @media (max-width: 600px){
+      .modal{
+        background: transparent;      /* niente oscuramento */
+        padding: 0;
+        align-items: flex-start;
+        justify-content: stretch;
+      }
+      .modal-card{
+        width: 100%;
+        max-height: none;
+        height: 50vh;                /* metà schermo */
+        border-radius: 0 0 18px 18px;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -317,11 +334,22 @@
     const modalClose = document.getElementById("modalClose");
     const searchbox = document.getElementById("searchbox");
 
-    function openModal(html){
+    function openModal(html, marker){
       modalBody.innerHTML = html;
       modal.classList.add("open");
+      // su mobile nascondo la searchbox per non sovrapporla
       if (isMobile) searchbox.style.display = "none";
+
+      // su mobile: centra il punto nella metà inferiore della mappa
+      if (isMobile && marker && marker.getLatLng) {
+        const ll = marker.getLatLng();
+        const z = Math.max(map.getZoom(), 20);
+        map.setView(ll, z, { animate: true });
+        const offsetY = Math.round(map.getSize().y * 0.25);
+        map.panBy([0, offsetY], { animate: true });
+      }
     }
+
     function closeModal(){
       modal.classList.remove("open");
       modalBody.innerHTML = "";
@@ -354,7 +382,7 @@
 
         lyr.on("click", () => {
           setSelectedMarker(lyr);
-          if (isMobile) openModal(html);
+          if (isMobile) openModal(html, lyr);
         });
 
         const searchText = [p.ID ?? "", p.Specie ?? "", p["In memoria di"] ?? "", p.Donatore ?? ""].join(" ").toLowerCase();
@@ -388,7 +416,7 @@
           setSelectedMarker(item.marker);
           if (isMobile) {
             const p = item.marker.feature?.properties || {};
-            openModal(buildCardHTML(p));
+            openModal(buildCardHTML(p), item.marker);
           } else {
             item.marker.openPopup();
           }
@@ -415,7 +443,7 @@
           setSelectedMarker(hits[0].marker);
           if (isMobile) {
             const p = hits[0].marker.feature?.properties || {};
-            openModal(buildCardHTML(p));
+            openModal(buildCardHTML(p), item.marker);
           } else {
             hits[0].marker.openPopup();
           }
