@@ -342,24 +342,33 @@
       modal.classList.add("open");
       if (isMobile) searchbox.style.display = "none";
 
-      // su mobile: centra il punto nel terzo inferiore visibile (sotto la scheda 2/3)
+      // Mobile: centra il punto direttamente nel terzo inferiore con UN solo movimento
       if (isMobile && marker && marker.getLatLng) {
         const ll = marker.getLatLng();
         const z = Math.max(map.getZoom(), 20);
 
-        // prima porta il punto vicino al centro (stabile)
-        map.setView(ll, z, { animate: true });
+        // assicura zoom corretto senza animazione
+        map.setZoom(z, { animate: false });
 
-        // poi, quando il movimento è finito, spostalo esattamente dove vogliamo nello schermo
-        map.once("moveend", () => {
-          const size = map.getSize();
-          const desired = L.point(size.x * 0.5, size.y * (5/6)); // centro del terzo inferiore
-          const current = map.latLngToContainerPoint(ll);
-          const offset = current.subtract(desired);
-          // panBy sposta la mappa di "offset", e il marker va in posizione "desired"
-          map.panBy(offset, { animate: true });
-        });
+        const size = map.getSize();
+        // posizione desiderata: centro orizzontale, centro del terzo inferiore
+        const desired = L.point(size.x * 0.5, size.y * (5/6));
+
+        // posizione attuale del marker sullo schermo
+        const current = map.latLngToContainerPoint(ll);
+
+        // offset necessario
+        const offset = current.subtract(desired);
+
+        // nuovo centro mappa che porta il marker in posizione desiderata
+        const centerPoint = L.point(size.x / 2, size.y / 2).add(offset);
+        const newCenter = map.containerPointToLatLng(centerPoint);
+
+        // unico movimento fluido (senza saltelli)
+        map.panTo(newCenter, { animate: true });
       }
+    }
+
     }
 
     function closeModal(){
