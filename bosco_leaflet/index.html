@@ -440,10 +440,15 @@
           setSelectedMarker(item.marker);
           if (isMobile) {
             const p = item.marker.feature?.properties || {};
-            openModal(buildCardHTML(p), hits[0].marker);
+            openModal(buildCardHTML(p), item.marker);
           } else {
             item.marker.openPopup();
           }
+
+          // ✅ pulisci la ricerca dopo aver selezionato un risultato
+          input.value = "";
+          renderResults([]);
+
           resultsEl.style.display = "none";
         };
         resultsEl.appendChild(div);
@@ -472,6 +477,9 @@
             hits[0].marker.openPopup();
           }
           resultsEl.style.display = "none";
+          // ✅ pulisci la ricerca dopo Invio
+          input.value = "";
+          renderResults([]);
         }
       }
       if (e.key === "Escape") {
