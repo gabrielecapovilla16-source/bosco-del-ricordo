@@ -1938,7 +1938,7 @@ const alberiData = {
       "type": "Feature",
       "properties": {
         "ID": 93,
-        "Specie": "Malus \"Red Sentinel\"",
+        "Specie": "Malus \"Profusion\"",
         "Tipo": 3,
         "Anno": 2025,
         "In memoria di": "Giovanni Biscaro",
@@ -1959,7 +1959,7 @@ const alberiData = {
       "type": "Feature",
       "properties": {
         "ID": 94,
-        "Specie": "Malus \"Red Sentinel\"",
+        "Specie": "Malus \"Profusion\"",
         "Tipo": 3,
         "Anno": 2025,
         "In memoria di": "In ricordo delle amiche",
@@ -2268,6 +2268,363 @@ const alberiData = {
         "coordinates": [
           9.1430414,
           45.5246216
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "ID": 104,
+        "Specie": "Malus \"Coccinella\"",
+        "Tipo": 1,
+        "Anno": 2026,
+        "In memoria di": null,
+        "Dedica": null,
+        "Donatore": null,
+        "Lat": 45.52492637,
+        "Lon": 9.14308038
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          9.14308038,
+          45.52492637
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "ID": 105,
+        "Specie": "Malus \"Coccinella\"",
+        "Tipo": 1,
+        "Anno": 2026,
+        "In memoria di": null,
+        "Dedica": null,
+        "Donatore": null,
+        "Lat": 45.52497346,
+        "Lon": 9.14308082
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          9.14308082,
+          45.52497346
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "ID": 106,
+        "Specie": "Malus \"Coccinella\"",
+        "Tipo": 1,
+        "Anno": 2026,
+        "In memoria di": null,
+        "Dedica": null,
+        "Donatore": null,
+        "Lat": 45.52498002,
+        "Lon": 9.14313482
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          9.14313482,
+          45.52498002
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "ID": 107,
+        "Specie": "Malus \"Profusion\"",
+        "Tipo": 3,
+        "Anno": 2026,
+        "In memoria di": null,
+        "Dedica": null,
+        "Donatore": null,
+        "Lat": 45.52494966,
+        "Lon": 9.14310255
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          9.14310255,
+          45.52494966
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "ID": 108,
+        "Specie": "Malus \"Profusion\"",
+        "Tipo": 3,
+        "Anno": 2026,
+        "In memoria di": null,
+        "Dedica": null,
+        "Donatore": null,
+        "Lat": 45.52495579,
+        "Lon": 9.14313314
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          9.14313314,
+          45.52495579
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "ID": 109,
+        "Specie": "Malus \"Evereste\"",
+        "Tipo": 3,
+        "Anno": 2026,
+        "In memoria di": null,
+        "Dedica": null,
+        "Donatore": null,
+        "Lat": 45.52496422,
+        "Lon": 9.1431595
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          9.1431595,
+          45.52496422
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "ID": 110,
+        "Specie": "Malus \"Evereste\"",
+        "Tipo": 3,
+        "Anno": 2026,
+        "In memoria di": null,
+        "Dedica": null,
+        "Donatore": null,
+        "Lat": 45.52497996,
+        "Lon": 9.14318263
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          9.14318263,
+          45.52497996
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "ID": 111,
+        "Specie": "Malus \"Evereste\"",
+        "Tipo": 3,
+        "Anno": 2026,
+        "In memoria di": null,
+        "Dedica": null,
+        "Donatore": null,
+        "Lat": 45.52496576,
+        "Lon": 9.14320763
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          9.14320763,
+          45.52496576
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "ID": 112,
+        "Specie": "Malus \"Profusion\"",
+        "Tipo": 3,
+        "Anno": 2026,
+        "In memoria di": null,
+        "Dedica": null,
+        "Donatore": null,
+        "Lat": 45.52491078,
+        "Lon": 9.14284083
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          9.14284083,
+          45.52491078
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "ID": 113,
+        "Specie": "Magnolia x soulangeana",
+        "Tipo": 2,
+        "Anno": 2026,
+        "In memoria di": null,
+        "Dedica": null,
+        "Donatore": null,
+        "Lat": 45.52449453,
+        "Lon": 9.14329456
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          9.14329456,
+          45.52449453
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "ID": 114,
+        "Specie": "Magnolia x soulangeana",
+        "Tipo": 2,
+        "Anno": 2026,
+        "In memoria di": null,
+        "Dedica": null,
+        "Donatore": null,
+        "Lat": 45.52447491,
+        "Lon": 9.14326362
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          9.14326362,
+          45.52447491
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "ID": 115,
+        "Specie": "Magnolia x soulangeana",
+        "Tipo": 2,
+        "Anno": 2026,
+        "In memoria di": null,
+        "Dedica": null,
+        "Donatore": null,
+        "Lat": 45.52445735,
+        "Lon": 9.14323008
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          9.14323008,
+          45.52445735
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "ID": 116,
+        "Specie": "Magnolia x soulangeana",
+        "Tipo": 2,
+        "Anno": 2026,
+        "In memoria di": null,
+        "Dedica": null,
+        "Donatore": null,
+        "Lat": 45.52444345,
+        "Lon": 9.14319362
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          9.14319362,
+          45.52444345
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "ID": 117,
+        "Specie": "Magnolia x soulangeana",
+        "Tipo": 2,
+        "Anno": 2026,
+        "In memoria di": null,
+        "Dedica": null,
+        "Donatore": null,
+        "Lat": 45.5244323,
+        "Lon": 9.14315457
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          9.14315457,
+          45.5244323
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "ID": 118,
+        "Specie": "Magnolia x soulangeana",
+        "Tipo": 2,
+        "Anno": 2026,
+        "In memoria di": null,
+        "Dedica": null,
+        "Donatore": null,
+        "Lat": 45.52442481,
+        "Lon": 9.14311455
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          9.14311455,
+          45.52442481
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "ID": 119,
+        "Specie": "Magnolia x soulangeana",
+        "Tipo": 2,
+        "Anno": 2026,
+        "In memoria di": null,
+        "Dedica": null,
+        "Donatore": null,
+        "Lat": 45.52442074,
+        "Lon": 9.14307162
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          9.14307162,
+          45.52442074
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "ID": 120,
+        "Specie": "Magnolia x soulangeana",
+        "Tipo": 2,
+        "Anno": 2026,
+        "In memoria di": null,
+        "Dedica": null,
+        "Donatore": null,
+        "Lat": 45.5244208,
+        "Lon": 9.14303032
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          9.14303032,
+          45.5244208
         ]
       }
     }
